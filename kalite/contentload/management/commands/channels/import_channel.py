@@ -82,7 +82,7 @@ def build_full_cache(items, id_key="id", ids=None):
     return dict((item["id"], item) for item in items)
 
 file_kind_dictionary = {
-    "Video": ["mp4", "mov", "3gp", "amv", "asf", "asx", "avi", "mpg", "swf", "wmv"],
+    "Video": ["webm", "mp4", "mov", "3gp", "amv", "asf", "asx", "avi", "mpg", "swf", "wmv"],
     "Image": ["tif", "bmp", "png", "jpg", "jpeg"],
     "Presentation": ["ppt", "pptx"],
     "Spreadsheet": ["xls", "xlsx"],
