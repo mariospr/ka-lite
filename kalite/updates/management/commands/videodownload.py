@@ -29,7 +29,7 @@ def scrape_video(youtube_id, format="mp4", force=False, quiet=False, callback=No
     if os.path.exists(video_file_download_path) and not force:
         return
 
-    yt_dl = youtube_dl.YoutubeDL({'outtmpl': video_file_download_path, "quiet": quiet})
+    yt_dl = youtube_dl.YoutubeDL({'outtmpl': video_file_download_path, "quiet": quiet, 'format': format})
     yt_dl.add_default_info_extractors()
     if callback:
         yt_dl.add_progress_hook(callback)
@@ -141,18 +141,9 @@ class Command(UpdatesDynamicCommand, CronCommand):
 
                     # Don't try to download a file that already exists in the content dir - just say it was successful
                     # and call it a day!
-                    if not os.path.exists(os.path.join(settings.CONTENT_ROOT, "{id}.mp4".format(id=video.get("youtube_id")))):
+                    if not os.path.exists(os.path.join(settings.CONTENT_ROOT, "{id}.webm".format(id=video.get("youtube_id")))):
 
                         try:
-                            # Download via urllib
-                            download_video(video.get("youtube_id"), callback=progress_callback)
-
-                        except URLNotFound:
-                            # Video was not found on amazon cloud service,
-                            #   either due to a KA mistake, or due to the fact
-                            #   that it's a dubbed video.
-                            #
-                            # We can use youtube-dl to get that video!!
                             logging.debug(_("Retrieving youtube video %(youtube_id)s via youtube-dl") % {"youtube_id": video.get("youtube_id")})
 
                             def youtube_dl_cb(stats, progress_callback, *args, **kwargs):
@@ -163,7 +154,7 @@ class Command(UpdatesDynamicCommand, CronCommand):
                                 else:
                                     percent = 0.
                                 progress_callback(percent=percent)
-                            scrape_video(video.get("youtube_id"), quiet=not settings.DEBUG, callback=partial(youtube_dl_cb, progress_callback=progress_callback))
+                            scrape_video(video.get("youtube_id"), format="webm", quiet=not settings.DEBUG, callback=partial(youtube_dl_cb, progress_callback=progress_callback))
 
                         except IOError as e:
                             logging.exception(e)

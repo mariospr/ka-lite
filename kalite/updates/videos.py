@@ -11,7 +11,7 @@ from fle_utils.videos import *  # get all into the current namespace, override s
 
 def get_local_video_size(youtube_id, default=None):
     try:
-        return os.path.getsize(os.path.join(settings.CONTENT_ROOT, "%s.mp4" % youtube_id))
+        return os.path.getsize(os.path.join(settings.CONTENT_ROOT, "%s.webm" % youtube_id))
     except Exception as e:
         logging.debug(str(e))
         return default
@@ -24,7 +24,7 @@ def download_video(youtube_id, format="mp4", callback=None):
     return videos.download_video(youtube_id, settings.CONTENT_ROOT, download_url, format, callback)
 
 
-def get_downloaded_youtube_ids(videos_path=None, format="mp4"):
+def get_downloaded_youtube_ids(videos_path=None, format="webm"):
     videos_path = videos_path or settings.CONTENT_ROOT
     return [path.split("/")[-1].split(".")[0] for path in glob.glob(os.path.join(videos_path, "*.%s" % format))]
 
