@@ -9,7 +9,7 @@ from kalite.updates.videos import get_local_video_size
 logging = django_settings.LOG
 
 
-def is_content_on_disk(content_id, format="mp4", content_path=None):
+def is_content_on_disk(content_id, format="webm", content_path=None):
     content_path = content_path or django_settings.CONTENT_ROOT
     content_file = os.path.join(content_path, content_id + ".%s" % format)
     return os.path.isfile(content_file)
@@ -68,7 +68,17 @@ def update_content_availability(content_list, language="en", channel="khan"):
         else:
             file_id = content.get("youtube_id")
             default_thumbnail = create_thumbnail_url(content.get("id"))
-            format = content.get("format", "")
+
+            # The SQLite3 databases included with the different content packs will declare
+            # the 'format type' of every single video that can be downloaded as 'mp4',
+            # which will cause KA Lite's logic not to work with the WebM videos we are
+            # downloading, resulting in broken user and admin interfaces (e.g. no videos
+            # available from the list of topics, impossible to delete them...).
+            #
+            # We can't change how the content packs are created, so we run a text
+            # susbtitution here to consider ".webm" instead of ".mp4" extensions.
+            format = content.get("format", "").replace("mp4", "webm")
+
             filename = file_id + "." + format if file_id else None
 
             # Get list of subtitle language codes currently available
